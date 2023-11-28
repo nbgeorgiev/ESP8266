@@ -118,25 +118,27 @@ void getDataBME280() {
   pressureAbs = (bme.readPressure()/ 100.0F);
   humidity = bme.readHumidity();
 
-  //Calculate reltive pressure from absolute  
+  // Calculate reltive pressure from absolute  
   pressureSea = (((pressureAbs)/pow((1-((float)(altitude))/44330), 5.255))) - pressureSea_cal; // Calculating the sea level pressure (Relative pressure)
 
-  //Calculate dewpoint
+  // Calculate dewpoint
   gamma_var = (b*tempC) / (c + tempC) + log(humidity/100.0);
   dewpoint = (c * gamma_var) / (b - gamma_var);
 
-  //Calculate absolute humidity from relative
+  // Calculate absolute humidity from relative
   humidityAbs = (6.112*exp((b*tempC)/(c + tempC))*humidity*2.1674) / (273.15 + tempC);
 }
 
+// Map function for battery level in %
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+// Battery volatge and level calculation function
 void batteryLevel() {
-  sensorValue = analogRead(analogInPin); //0 - 1023 return value
-  voltage = ((((float)sensorValue *4.2) / 1024) - calibration);
+  sensorValue = analogRead(analogInPin); // 0 - 1023 return value
+  voltage = ((((float)sensorValue *4.2) / 1024) - calibration); // Since max. battery voltage when charges is 4.2V
   if (voltage < 0){
     voltage = 0;
   }
