@@ -1,39 +1,43 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 #include <ESP8266WiFi.h>
-#include "wifi_credentials.h"
 #include <ThingSpeak.h>
+#include "wifi_credentials_consts.h"
 #define sensor_address 0x76 // Adafruit devices use 0x77 all others use 0x76
-#define SLEEP_TIME 3e8 // // 3e8 is 5 minutes
+#define SLEEP_TIME 3e8 // 3e8 uS is 5 minutes
 #define DEBUG 0 //debug = 1 -> enable 
+#define CAL 0.077
+#define SEA_LEVEL_PRESSURE_CAL 1.0
 
-//---------- BME object
+// BME object
 Adafruit_BME280 bme;
 
-int analogInPin  = A0;    // Analog input pin
+// Analog input pin for battery voltage measurment
+int analogInPin  = A0;
 
-//--------- Wi-Fi settings
+// Wi-Fi settings
 WiFiClient  client;
-const char* ssid = WIFISSID;
+const char* ssid = WIFI_SSID;
 const char* password = PASSWORD;
-String newHostname = "NDK_Weather_Station";
+String newHostname = HOST_NAME;
 
-//--------ThingsSpeak channel settings
-unsigned long int myChannelNumber = MYCHANNUM;
-const char* myWriteAPIKey = APIWRITEKEY;
+// ThingsSpeak channel settings
+unsigned long int myChannelNumber = CHANNEL_NUMBER;
+const char* myWriteAPIKey = WRITE_API_KEY;
 
 // Variables for sensor readings
 float tempC, humidity, pressureAbs, pressureSea;
-int altitude = 557;
+int altitude = 557; // Altitude of the station location in meters
 float b = 17.62;
 float c = 243.12;
 float gamma_var, dewpoint, humidityAbs;
+
 // Battery level variables
-int sensorValue;          // Analog Output of Sensor
+int sensorValue;
 float voltage;
-float calibration = 0.077; // Accuracy
+float calibration = CAL; // Accuracy calibration of voltage measurment through out analog pin
 int bat_percentage;
-float pressureSea_cal = 1.0;
+float pressureSea_cal = SEA_LEVEL_PRESSURE_CAL;
 
 // Error codes
 int error = 0;
@@ -169,7 +173,7 @@ void printValues() {
 
 // Pushing data to Thingspeak.com
 void thingSpeak() {
-  // set the fields with the values
+    // Set the fields with the values
     ThingSpeak.setField(1, tempC);
     ThingSpeak.setField(2, humidity);
     ThingSpeak.setField(3, pressureAbs);
@@ -204,7 +208,7 @@ void setup() {
   }
 
   // Functions sequences to be run
-  initBME280(); //BME280 sensor check
+  initBME280();
   getDataBME280();
   BME280_Sleep(sensor_address);
   batteryLevel();
