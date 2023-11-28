@@ -6,7 +6,7 @@
 #define sensor_address 0x76 // Adafruit devices use 0x77 all others use 0x76
 #define SLEEP_TIME 3e8 // 3e8 uS is 5 minutes
 #define DEBUG 0 //debug = 1 -> enable 
-#define CAL 0.077
+#define CAL_BVOLT 0.077
 #define SEA_LEVEL_PRESSURE_CAL 1.0
 
 // BME object
@@ -35,7 +35,7 @@ float gamma_var, dewpoint, humidityAbs;
 // Battery level variables
 int sensorValue;
 float voltage;
-float calibration = CAL; // Accuracy calibration of voltage measurment through out analog pin
+float calibration = CAL_BVOLT; // Accuracy calibration of voltage measurment through out analog pin
 int bat_percentage;
 float pressureSea_cal = SEA_LEVEL_PRESSURE_CAL;
 
