@@ -25,4 +25,5 @@ void printValues () {
     Serial.print("Category: ");
     Serial.println(aqiCategory10.c_str());
     Serial.println("=============================================");
+  }
 }

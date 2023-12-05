@@ -1,9 +1,11 @@
+// Connecting to Wi Fi
+
 void setup_wifi() {
 
   Serial.print("Connecting to ");
-  Serial.println(WIFISSID);
+  Serial.println(WIFI_SSID);
   WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFISSID, PASSWORD);
+  WiFi.begin(WIFI_SSID, PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(F("."));

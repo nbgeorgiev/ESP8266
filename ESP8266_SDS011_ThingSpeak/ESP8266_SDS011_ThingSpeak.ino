@@ -5,7 +5,7 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include "SdsDustSensor.h"
-#include "wifi_credentials.h"
+#include "wifi_credentials_consts.h"
 #define WAKE_UP_INTERVAL 3e3 // 3e3 uS is 30 seconds
 #define SLEEP_INTERVAL 3e8 // 3e8 uS is 5 minutes
 #define DEBUG 1 // debug = 1 -> enable
@@ -21,7 +21,7 @@ const int sleepInterval = SLEEP_INTERVAL; // Sleeping time of SDS011 - 5 min 300
 
 // Wi-Fi settings
 WiFiClient  client;
-const char* ssid = WIFISSID;
+const char* ssid = WIFI_SSID;
 const char* password = PASSWORD;
 String newHostname = HOST_NAME;
 
@@ -42,6 +42,13 @@ int aqi10 = 0;
 String aqiCategory25 = "";
 String aqiCategory10 = "";
 
+// Functions prototypes
+void setup_wifi(); // WiFi connection settings
+void aqiCalc(); //AQI index calculation function 
+void thingSpeak(); //Pushing data to Thingspeak.com
+void printValues(); //Printing values into the serial monitor for debugging purposes
+void updateOTA(); //Update over WiFi and WiFi connection settings
+
 // Initilization of SDS011 sensor
 void initSDS011(){
       sds.begin();
@@ -49,12 +56,6 @@ void initSDS011(){
       //Serial.println(sds.queryFirmwareVersion().toString()); // prints firmware version
       //Serial.println(sds.setQueryReportingMode().toString());
 }
-
-// Functions prototypes
-void aqiCalc(); //AQI index calculation function 
-void thingSpeak(); //Pushing data to Thingspeak.com
-void printValues(); //Printing values into the serial monitor for debugging purposes
-void updateOTA(); //Update over WiFi and WiFi connection settings
 
 // Getting data from SDS011
 void getDataSDS011() {
@@ -97,6 +98,5 @@ void loop() {
     delay(100);
     printValues();
     thingSpeak();
-    ArduinoOTA.handle();
     delay(sleepInterval); 
 }
