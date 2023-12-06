@@ -18,6 +18,9 @@ SdsDustSensor sds(rxPin, txPin);
 // Time intervals for the SDS011 sensor
 const int wakeupInterval = WAKE_UP_INTERVAL; // Waking up of SDS011 - 30 sec
 const int sleepInterval = SLEEP_INTERVAL; // Sleeping time of SDS011 - 5 min 300000
+unsigned long startMillis;  //some global variables available anywhere in the program
+unsigned long currentMillis;
+const unsigned long period = SLEEP_INTERVAL;  //the value is a number of milliseconds Sleeping time of SDS011 - 5 min 300000
 
 // Wi-Fi settings
 WiFiClient client;
@@ -85,21 +88,26 @@ void setup() {
     setup_wifi();
 
     // Begin OTA
-    //ArduinoOTA.begin(); // Starts OTA
+    ArduinoOTA.begin(); // Starts OTA
     //updateOTA(); //WiFi connection and OTA update code
 
     // Sensors initialization functions
-    initSDS011(); //SDS011 sensor start  
+    initSDS011(); //SDS011 sensor start
+    startMillis = millis(); //initial start time
 }
 
 void loop() {
-    //ArduinoOTA.handle(); // Handle OTA
-    getDataSDS011();
-    delay(100);
-    aqiCalc();
-    delay(100);
-    printValues();
-    delay(100);
-    thingSpeak();
-    delay(sleepInterval);
+    ArduinoOTA.handle(); // Handle OTA
+    currentMillis = millis();
+    if (currentMillis - startMillis >= period)
+    {
+        getDataSDS011();
+        delay(100);
+        aqiCalc();
+        delay(100);
+        printValues();
+        delay(100);
+        thingSpeak();
+        startMillis = currentMillis;
+    }
 }
