@@ -6,8 +6,8 @@
 #include <ArduinoOTA.h>
 #include "SdsDustSensor.h"
 #include "wifi_credentials_consts.h"
-#define WAKE_UP_INTERVAL 3e4 // 3e4 mS is 30 seconds
-#define SLEEP_INTERVAL 3e5 // 3e5 mS is 5 minutes - delay() takes milliseconds
+#define WARM_UP_INTERVAL 3e4 // 3e4 ms is 30 seconds
+#define SLEEP_INTERVAL 3e5 // 3e5 ms is 5 minutes - delay() takes milliseconds
 #define DEBUG 1 // debug = 1 -> enable
 
 // Serial Comunication with SDS011 sensor
@@ -16,11 +16,10 @@ int txPin = D2;
 SdsDustSensor sds(rxPin, txPin);
 
 // Time intervals for the SDS011 sensor
-const int wakeupInterval = WAKE_UP_INTERVAL; // Waking up of SDS011 - 30 sec
-const int sleepInterval = SLEEP_INTERVAL; // Sleeping time of SDS011 - 5 min 300000
+const int warmUpInterval = WARM_UP_INTERVAL; // Waking up of SDS011 - 30 sec
 unsigned long startMillis;  //some global variables available anywhere in the program
 unsigned long currentMillis;
-const unsigned long period = SLEEP_INTERVAL;  //the value is a number of milliseconds Sleeping time of SDS011 - 5 min 300000
+const unsigned long sleepInterval = SLEEP_INTERVAL;  // Sleeping time of SDS011 - 5 min 300000 ms
 
 // Wi-Fi settings
 WiFiClient client;
@@ -31,8 +30,6 @@ String newHostname = HOST_NAME;
 // ThingsSpeak settings
 unsigned long myChannelNumber = CHANNEL_NUMBER;
 const char* myWriteAPIKey = WRITE_API_KEY;
-
-unsigned long myTime;
 
 // Variables for sensor readings
 float pm25;
@@ -56,14 +53,14 @@ void printValues(); //Printing values into the serial monitor for debugging purp
 void initSDS011(){
     sds.begin();
     ReportingModeResult pm = sds.setQueryReportingMode();
-    Serial.println(sds.queryFirmwareVersion().toString()); // prints firmware version
-    Serial.println(sds.setQueryReportingMode().toString());
+    Serial.println(sds.queryFirmwareVersion().toString()); // Prints firmware version
+    Serial.println(sds.setQueryReportingMode().toString()); // Prints reporting mode
 }
 
 // Getting data from SDS011
 void getDataSDS011() {
     sds.wakeup();
-    delay(wakeupInterval); // warm up for 30 seconds
+    delay(warmUpInterval); // warm up for 30 seconds
 
     PmResult pm = sds.queryPm();
     if (pm.isOk()) {
@@ -88,18 +85,20 @@ void setup() {
     setup_wifi();
 
     // Begin OTA
-    ArduinoOTA.begin(); // Starts OTA
+    ArduinoOTA.begin();
     //updateOTA(); //WiFi connection and OTA update code
 
     // Sensors initialization functions
-    initSDS011(); //SDS011 sensor start
-    startMillis = millis(); //initial start time
+    initSDS011();
+
+    // Initial start time
+    startMillis = millis();
 }
 
 void loop() {
     ArduinoOTA.handle(); // Handle OTA
     currentMillis = millis();
-    if (currentMillis - startMillis >= period)
+    if (currentMillis - startMillis >= sleepInterval)
     {
         getDataSDS011();
         delay(100);
