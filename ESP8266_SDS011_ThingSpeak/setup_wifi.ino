@@ -1,4 +1,6 @@
 // Connecting to Wi Fi
+#include <ESP8266WiFi.h>
+#include "wifi_credentials_consts.h"
 
 void setup_wifi() {
 
