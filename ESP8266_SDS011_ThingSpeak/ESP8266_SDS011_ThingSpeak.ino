@@ -1,13 +1,8 @@
-#include <Wire.h>
-#include <ESP8266WiFi.h>
-#include <ThingSpeak.h>
-#include <ESP8266mDNS.h>
-#include <WiFiUdp.h>
-#include <ArduinoOTA.h>
 #include "SdsDustSensor.h"
 #include "wifi_credentials_consts.h"
+#include "OTA.h"
 #define WARM_UP_INTERVAL 3e4 // 3e4 ms is 30 seconds
-#define SLEEP_INTERVAL 3e5 // 3e5 ms is 5 minutes - delay() takes milliseconds
+#define SLEEP_INTERVAL 3e5 // 3e5 ms is 5 minutes
 #define DEBUG 1 // debug = 1 -> enable
 
 // Serial Comunication with SDS011 sensor
@@ -16,8 +11,8 @@ int txPin = D2;
 SdsDustSensor sds(rxPin, txPin);
 
 // Time intervals for the SDS011 sensor
-const int warmUpInterval = WARM_UP_INTERVAL; // Waking up of SDS011 - 30 sec
-unsigned long startMillis;  //some global variables available anywhere in the program
+const int warmUpInterval = WARM_UP_INTERVAL; // Warm up of SDS011 for 30 sec before taking measurement
+unsigned long startMillis;
 unsigned long currentMillis;
 const unsigned long sleepInterval = SLEEP_INTERVAL;  // Sleeping time of SDS011 - 5 min 300000 ms
 
@@ -25,7 +20,7 @@ const unsigned long sleepInterval = SLEEP_INTERVAL;  // Sleeping time of SDS011 
 WiFiClient client;
 const char* ssid = WIFI_SSID;
 const char* password = PASSWORD;
-String newHostname = HOST_NAME;
+const char* newHostname = HOST_NAME;
 
 // ThingsSpeak settings
 unsigned long myChannelNumber = CHANNEL_NUMBER;
@@ -43,16 +38,15 @@ String aqiCategory25 = "";
 String aqiCategory10 = "";
 
 // Functions prototypes
-void setup_wifi(); // WiFi connection settings
-void aqiCalc(); //AQI index calculation function 
-void thingSpeak(); //Pushing data to Thingspeak.com
-void printValues(); //Printing values into the serial monitor for debugging purposes
-//void updateOTA(); //Update over WiFi and WiFi connection settings
+void setupOTA(const char*, const char*, const char*); // Update Over The Air and WiFi settings
+void aqiCalc(); // AQI index calculation function 
+void thingSpeak(); // Pushing data to Thingspeak.com
+void printValues(); // Printing values into the serial monitor for debugging purposes
 
 // Initilization of SDS011 sensor
 void initSDS011(){
     sds.begin();
-    ReportingModeResult pm = sds.setQueryReportingMode();
+    ReportingModeResult pm = sds.setQueryReportingMode(); // Set query reporting mode
     Serial.println(sds.queryFirmwareVersion().toString()); // Prints firmware version
     Serial.println(sds.setQueryReportingMode().toString()); // Prints reporting mode
 }
@@ -82,15 +76,11 @@ void getDataSDS011() {
 
 void setup() {
     Serial.begin(115200);
-    setup_wifi();
 
-    // Begin OTA
-    ArduinoOTA.begin();
-    //updateOTA(); //WiFi connection and OTA update code
-
+    // Arduino OTA settings and WiFi connection
+    setupOTA(newHostname, WIFI_SSID, PASSWORD);
     // Sensors initialization functions
     initSDS011();
-
     // Initial start time
     startMillis = millis();
 }

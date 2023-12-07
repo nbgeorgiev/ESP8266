@@ -1,4 +1,5 @@
 // Pushing data to Thingspeak.com
+#include <ThingSpeak.h>
 
 void thingSpeak () {
   // Initialize ThingSpeak
