@@ -3,7 +3,7 @@
 #include "OTA.h"
 #define WARM_UP_INTERVAL 3e4 // 3e4 ms is 30 seconds
 #define SLEEP_INTERVAL 3e5 // 3e5 ms is 5 minutes
-#define DEBUG 1 // debug = 1 -> enable
+#define DEBUG 0 // debug = 1 -> enable
 
 // Serial Comunication with SDS011 sensor
 int rxPin = D1;
@@ -36,7 +36,7 @@ int aqi10 = 0;
 
 // Functions prototypes
 void setupOTA(const char*, const char*, const char*); // Update Over The Air and WiFi settings
-void aqi(float, float); // AQI index calculation function 
+void aqi(float, float, int*, int*); // AQI index calculation function 
 void thingSpeak(); // Pushing data to Thingspeak.com
 void printValues(); // Printing values into the serial monitor for debugging purposes
 
@@ -89,7 +89,7 @@ void loop() {
     {
         getDataSDS011();
         delay(100);
-        aqi(pm25, pm10);
+        aqi(pm25, pm10, &aqi10, &aqi25);
         delay(100);
         printValues();
         delay(100);
