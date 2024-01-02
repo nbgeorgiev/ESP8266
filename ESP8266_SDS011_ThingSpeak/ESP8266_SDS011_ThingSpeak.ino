@@ -34,9 +34,6 @@ float pm10;
 int aqi25 = 0;
 int aqi10 = 0;
 
-String aqiCategory25 = "";
-String aqiCategory10 = "";
-
 // Functions prototypes
 void setupOTA(const char*, const char*, const char*); // Update Over The Air and WiFi settings
 void aqi(float, float); // AQI index calculation function 
