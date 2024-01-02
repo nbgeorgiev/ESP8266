@@ -39,7 +39,7 @@ String aqiCategory10 = "";
 
 // Functions prototypes
 void setupOTA(const char*, const char*, const char*); // Update Over The Air and WiFi settings
-void aqiCalc(); // AQI index calculation function 
+void aqi(float, float); // AQI index calculation function 
 void thingSpeak(); // Pushing data to Thingspeak.com
 void printValues(); // Printing values into the serial monitor for debugging purposes
 
@@ -92,7 +92,7 @@ void loop() {
     {
         getDataSDS011();
         delay(100);
-        aqiCalc();
+        aqi(pm25, pm10);
         delay(100);
         printValues();
         delay(100);
