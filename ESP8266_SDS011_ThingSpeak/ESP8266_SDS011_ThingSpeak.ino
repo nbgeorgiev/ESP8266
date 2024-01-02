@@ -89,7 +89,7 @@ void loop() {
     {
         getDataSDS011();
         delay(100);
-        aqi(pm25, pm10, &aqi10, &aqi25);
+        aqi(pm25, pm10, &aqi25, &aqi10);
         delay(100);
         printValues();
         delay(100);

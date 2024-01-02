@@ -59,7 +59,7 @@ int aqiCalc(float pm, const float pm_limits[]){
 }
 
 //AQI index calculation function
-void aqi(float pm25, float pm10, int *aqi25, int *aqi10) {
+void aqi(float pm25, float pm10, int* aqi25, int* aqi10) {
    // Breakpoints for the AQI
    const float pm25_conc_values[8] = {0, 12.0, 35.4, 55.4, 150.4, 250.4, 350.4, 500.4};
    const float pm10_conc_values[8] = {0, 54, 154, 254, 354, 424, 504, 604};
