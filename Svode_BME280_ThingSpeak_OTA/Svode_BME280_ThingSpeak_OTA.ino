@@ -16,8 +16,7 @@ const int ledPin = LED_BUILTIN; // Built-in LED on NodeMCU 0.9 (GPIO2)
 
 // BME280 setup (I2C)
 Adafruit_BME280 bme; // I2C interface (D1 = SCL, D2 = SDA)
-//#define SEALEVELPRESSURE_HPA (1013.25) // Standard sea-level pressure for altitude calculation
-#define ALTITUDE 210.0 // Altitude in meters (set to 210m for your location)
+#define ALTITUDE 210.0 // Altitude in meters (set to 210m for Sv)
 
 // NTP Client setup
 WiFiUDP ntpUDP;
